@@ -1,12 +1,12 @@
 const express = require('express');
 const { menuModel, validateMenu } = require('../models/menu');
-const { OK, Not_Found, Created, Bad_Request } = require('./statusCode');
+const { OK, Not_Found, Created, Bad_Request, Not_Content } = require('./statusCode');
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
   const result = await menuModel.find().select('-__v');
-  res.status(200).send(result);
+  res.status(OK).send(result);
 });
 
 router.post('/', async (req, res) => {
@@ -20,6 +20,8 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
+  if (!req.params.id) return res.status(Bad_Request).json('The ID was not provided.');
+
   const { error, value } = validateMenu(req.body);
   if (error) return res.status(Bad_Request).json(error.details[0].message);
 
@@ -30,11 +32,13 @@ router.put('/:id', async (req, res) => {
 });
 
 router.delete('/:id', async (req, res) => {
+  if (!req.params.id) return res.status(Bad_Request).json('The ID was not provided.');
+
   let menu = await menuModel.findByIdAndDelete(req.params.id);
 
   if (!menu) return res.status(Not_Found).json('The menu with the given ID was not found.');
 
-  res.status(OK).send(menu);
+  res.status(Not_Content).end();
 });
 
 router.get('/:id', async (req, res) => {
@@ -45,7 +49,7 @@ router.get('/:id', async (req, res) => {
 
   if (!menu) return res.status(Not_Found).json('The menu with the given ID was not found.');
 
-  res.statuys(OK).send(menu);
+  res.status(OK).send(menu);
 });
 
 module.exports = router;

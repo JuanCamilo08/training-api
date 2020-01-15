@@ -1,7 +1,7 @@
 module.exports = {
   OK: 200,
   Created: 201,
-  Not_content: 204,
+  Not_Content: 204,
   Not_Modified: 304,
   Bad_Request: 400,
   Unauthorized: 401,
